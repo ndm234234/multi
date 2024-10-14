@@ -1,5 +1,8 @@
+import "bootstrap/dist/css/bootstrap.css";
 import logo from './logo.svg';
 import './App.css';
+
+import { Navbar, NavItem, Nav, Container, Row, Col } from "react-bootstrap";
 
 import React, { useEffect, useState } from "react";
 
@@ -49,18 +52,29 @@ function WeatherDisplay(props) {
 function App() {
   const [activePlace, setActivePlace] = useState(0);
   return (
-    <div className="App">
-      {PLACES.map((place, index) => (
-        <button
-          key={index}
-          onClick={() => {
+  <div>
+  <Container>
+    <Row>
+      <Col md={4} sm={4}>
+        <h3>Select a city</h3>
+        <Nav
+          bsStyle="pills"
+          stacked
+          activeKey={activePlace}
+          onSelect={index => {
             setActivePlace(index);
           }}
         >
-            {place.name}
-        </button>
-      ))}
-      <WeatherDisplay key={activePlace} zip={PLACES[activePlace].zip} />
+          {PLACES.map((place, index) => (
+            <NavItem key={index} eventKey={index}>{place.name}</NavItem>
+          ))}
+        </Nav>
+      </Col>
+      <Col md={8} sm={8}>
+        <WeatherDisplay key={activePlace} zip={PLACES[activePlace].zip} />
+      </Col>
+    </Row>
+  </Container>
     </div>
 
   );
