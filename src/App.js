@@ -1,83 +1,173 @@
-import "bootstrap/dist/css/bootstrap.css";
+import  { useEffect, useState, useCallback } from "react";
+
+import * as React from 'react'
+
 import logo from './logo.svg';
 import './App.css';
 
-import { Navbar, NavItem, Nav, Container, Row, Col } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.css";
 
-import React, { useEffect, useState } from "react";
+import { Navbar, NavItem, Nav, NavLink, Collapse, Container, Row, Col } from "react-bootstrap";
+import Image from "react-bootstrap/Image";
+import ButtonGroup from "react-bootstrap/ButtonGroup"; 
+import Button from "react-bootstrap/Button";
 
-const PLACES = [
-  { name: "Palo Alto", zip: "94303" },
-  { name: "San Jose", zip: "94088" },
-  { name: "Santa Cruz", zip: "95062" },
-  { name: "Honolulu", zip: "96803" }
-];
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Table from 'react-bootstrap/Table';
 
-function WeatherDisplay(props) {
-  const [weatherData, setWeatherData] = useState(null);
-  const [weather, setWeather] = useState(null);
-  const [iconUrl, setIconUrl] = useState(null);
- 
-  useEffect(() => {
-    const zip = props.zip;
-    const URL = "http://api.openweathermap.org/data/2.5/weather?q=" +
-      zip +
-      "&appid=b1b35bba8b434a28a0be2a3e1071ae5b&units=imperial";
-    fetch(URL).then(res => res.json()).then(json => {
-      setWeatherData(json);
-
-    });
-  }, []);
-
-  if (!weatherData) return <div>Loading</div>;
-  else 
-  {
-    const weather = weatherData.weather[0];
-    return (
-
-      <div>
-      <h1>
-        {weather.main} in {weatherData.name}
-        <img src={iconUrl} alt={weatherData.description} />
-      </h1>
-      <p>Current: {weatherData.main.temp}°</p>
-      <p>High: {weatherData.main.temp_max}°</p>
-      <p>Low: {weatherData.main.temp_min}°</p>
-      <p>Wind Speed: {weatherData.wind.speed} mi/hr</p>
-    </div>
-    );
-  }
-}
 
 function App() {
-  const [activePlace, setActivePlace] = useState(0);
-  return (
-  <div>
-  <Container>
-    <Row>
-      <Col md={4} sm={4}>
-        <h3>Select a city</h3>
-        <Nav
-          bsStyle="pills"
-          stacked
-          activeKey={activePlace}
-          onSelect={index => {
-            setActivePlace(index);
-          }}
-        >
-          {PLACES.map((place, index) => (
-            <NavItem key={index} eventKey={index}>{place.name}</NavItem>
-          ))}
-        </Nav>
-      </Col>
-      <Col md={8} sm={8}>
-        <WeatherDisplay key={activePlace} zip={PLACES[activePlace].zip} />
-      </Col>
-    </Row>
-  </Container>
-    </div>
+  const [tableColumns, setTableColumns] = useState(0);
+  const [tableData, setTableData] = useState(null);
+  const [showTable, setShowTable] = useState(false);
+  const [fromValue, setFromValue] = useState("3");
+  const [toValue, setToValue] = useState("3");
 
+ const onSubmit = useCallback(()=>{
+    console.log(document.getElementById("from").value);
+
+    const from = parseInt(document.getElementById("from").value);
+    const to = parseInt(document.getElementById("to").value);
+
+    const multi = new Array();
+
+    for (let  k = 1; k < 10; k++)
+    {
+      for (let i = from; i <= to; ++i)
+      {
+        multi.push(
+        {
+          result : i * k,
+          x : k,
+          y : i,
+          action : "x"
+        });
+      }
+    }
+
+    const devide = new Array();
+    for(let rec of multi)
+    {
+        devide.push(
+        {
+          result : rec.result / rec.y,
+          x : rec.result,
+          y : rec.y,
+          action : ":"
+        });
+    }
+
+    let infos = new Array();
+    for (let i = 0; i < 3; ++i)
+    {
+      infos = infos.concat(multi).concat(devide);
+    }
+
+    function shuffleArray(array) {
+      for (var i = array.length - 1; i > 0; i--) { 
+          // Generate random number 
+          var j = Math.floor(Math.random() * (i + 1));
+          var temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+      }
+      return array;
+    };
+
+    const columns = 6;
+
+    let infoColumns = new Array();
+    for (let i = 0; i < columns; ++i)
+    {
+      let newInfos = shuffleArray(infos);
+      infoColumns.push(newInfos.slice());
+    }
+
+    let resultColumns = new Array();
+    for (let i = 0; i < infos.length; ++i)
+    {
+      resultColumns.push(new Array());
+      for (let k = 0; k < infoColumns.length; ++k)
+      {
+        resultColumns[resultColumns.length-1].push(infoColumns[k][i]);
+      }
+    }
+
+    setTableColumns(infoColumns);
+    setTableData(resultColumns);
+ },[])
+
+  return (
+  <div className="App">
+  <Form>
+    <Form.Group as={Row}  className="mb-3" controlId="formHorizontalEmail">
+      <Form.Label column sm={2}>Начало</Form.Label>
+      <Col sm={2}>
+      <Form.Control id="from"
+      required
+      type="text"
+      placeholder="First name"
+      defaultValue={fromValue}
+      />
+      </Col>
+    </Form.Group> 
+    <Form.Group as={Row}  className="mb-3" controlId="formHorizontalPassword">
+      <Form.Label column sm={2} >Конец</Form.Label>
+      <Col sm={2}>
+      <Form.Control id="to"
+      required
+      type="text"
+      placeholder="First name"
+      defaultValue={toValue}
+      />
+      </Col>
+    </Form.Group>
+    <Form.Group as={Row} className="mb-3">
+      <Col sm={{ span: 10, offset: 2 }}>
+      <Button type="button"
+      onClick={() =>  { onSubmit(); setShowTable(true); }} 
+      >Рассчитать</Button>
+      </Col>
+    </Form.Group>
+  </Form>
+  <TableDisplay visible={showTable} tableData={tableData} tableColumns={tableColumns}/>
+  </div>
   );
 }
 
 export default App;
+
+function TableDisplay(props) {
+  if (!props.visible) 
+  {
+    return <div></div>
+  }
+  else 
+  return (
+    <Table responsive cellspacing="2" cellpading="2">
+    <thead>
+      <tr>
+      {props.tableColumns.map(arrayData=>{
+        return (
+        <th></th>
+        )})}
+      </tr>
+    </thead>
+    <tbody>
+      {props.tableData.map(arrayData=>{
+        return(
+        <tr>
+          {arrayData.map(arrayCeil=>{
+          return(  
+          <td>{arrayCeil.x.toString().padStart(2) + arrayCeil.action + arrayCeil.y + "="}</td>
+          )
+          })}
+        </tr>
+        )
+        }) 
+      }
+    </tbody>
+  </Table>
+  );
+}
