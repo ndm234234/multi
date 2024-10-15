@@ -15,14 +15,15 @@ import Button from "react-bootstrap/Button";
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Table from 'react-bootstrap/Table';
-
+import Accordion from 'react-bootstrap/Accordion';
 
 function App() {
   const [tableColumns, setTableColumns] = useState(0);
   const [tableData, setTableData] = useState(null);
   const [showTable, setShowTable] = useState(false);
-  const [fromValue, setFromValue] = useState("3");
-  const [toValue, setToValue] = useState("3");
+  const [fromValue, setFromValue] = useState(5);
+  const [toValue, setToValue] = useState(5);
+  const [open, setOpen] = useState(false);
 
  const onSubmit = useCallback(()=>{
     console.log(document.getElementById("from").value);
@@ -96,42 +97,55 @@ function App() {
 
     setTableColumns(infoColumns);
     setTableData(resultColumns);
+    setOpen(true)
  },[])
 
   return (
   <div className="App">
-  <Form>
-    <Form.Group as={Row}  className="mb-3" controlId="formHorizontalEmail">
-      <Form.Label column sm={2}>Начало</Form.Label>
-      <Col sm={2}>
-      <Form.Control id="from"
-      required
-      type="text"
-      placeholder="First name"
-      defaultValue={fromValue}
-      />
-      </Col>
-    </Form.Group> 
-    <Form.Group as={Row}  className="mb-3" controlId="formHorizontalPassword">
-      <Form.Label column sm={2} >Конец</Form.Label>
-      <Col sm={2}>
-      <Form.Control id="to"
-      required
-      type="text"
-      placeholder="First name"
-      defaultValue={toValue}
-      />
-      </Col>
-    </Form.Group>
-    <Form.Group as={Row} className="mb-3">
-      <Col sm={{ span: 10, offset: 2 }}>
-      <Button type="button"
-      onClick={() =>  { onSubmit(); setShowTable(true); }} 
-      >Рассчитать</Button>
-      </Col>
-    </Form.Group>
-  </Form>
+  <Accordion defaultActiveKey="0">
+    <Accordion.Item eventKey="0">
+      <Accordion.Header>Генератор таблицы умножения</Accordion.Header>
+      <Accordion.Body>
+      <Form>
+        <Form.Group as={Row}  className="mb-3" controlId="formHorizontalEmail">
+          <Form.Label column sm={2}>Начало</Form.Label>
+          <Col sm={2}>
+          <Form.Control id="from"
+          required
+          type="text"
+          placeholder="First name"
+          defaultValue={fromValue}
+          />
+          </Col>
+        </Form.Group> 
+        <Form.Group as={Row}  className="mb-3" controlId="formHorizontalPassword">
+          <Form.Label column sm={2} >Конец</Form.Label>
+          <Col sm={2}>
+          <Form.Control id="to"
+          required
+          type="text"
+          placeholder="First name"
+          defaultValue={toValue}
+          />
+          </Col>
+        </Form.Group>
+        <Form.Group as={Row} className="mb-3">
+          <Col sm={{ span: 10, offset: 2 }}>
+          <Button type="button"
+          onClick={() =>  { onSubmit(); setShowTable(true); }} 
+          >Рассчитать</Button>
+          </Col>
+        </Form.Group>
+      </Form>
+      </Accordion.Body>
+    </Accordion.Item>
+  </Accordion>
+
+  <Collapse in={open} > 
+  <div >
   <TableDisplay visible={showTable} tableData={tableData} tableColumns={tableColumns}/>
+  </div>
+  </Collapse>
   </div>
   );
 }
