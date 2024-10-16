@@ -107,7 +107,7 @@ function App() {
       <Accordion.Header>Генератор таблицы умножения</Accordion.Header>
       <Accordion.Body>
       <Form>
-        <Form.Group as={Row}  className="mb-3" controlId="formHorizontalEmail">
+        <Form.Group as={Row}  className="mb-3">
           <Form.Label column sm={2}>Начало</Form.Label>
           <Col sm={2}>
           <Form.Control id="from"
@@ -118,7 +118,7 @@ function App() {
           />
           </Col>
         </Form.Group> 
-        <Form.Group as={Row}  className="mb-3" controlId="formHorizontalPassword">
+        <Form.Group as={Row}  className="mb-3">
           <Form.Label column sm={2} >Конец</Form.Label>
           <Col sm={2}>
           <Form.Control id="to"
@@ -159,10 +159,10 @@ function TableDisplay(props) {
   }
   else 
   return (
-    <Table responsive cellspacing="2" cellpading="2">
+    <Table responsive cellSpacing="2" cellpading="2">
     <thead>
       <tr>
-      {props.tableColumns.map(arrayData=>{
+      {props.tableColumns.map((arrayData)=>{
         return (
         <th></th>
         )})}
