@@ -112,8 +112,8 @@ function App() {
           <Col sm={2}>
           <Form.Control id="from"
           required
-          type="text"
-          placeholder="First name"
+          type="number"
+          placeholder="Введите начальное число"
           defaultValue={fromValue}
           />
           </Col>
@@ -123,8 +123,8 @@ function App() {
           <Col sm={2}>
           <Form.Control id="to"
           required
-          type="text"
-          placeholder="First name"
+          type="number"
+          placeholder="Введите конечное число"
           defaultValue={toValue}
           />
           </Col>
