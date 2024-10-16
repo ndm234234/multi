@@ -1,5 +1,4 @@
 import  { useEffect, useState, useCallback } from "react";
-
 import * as React from 'react'
 
 import logo from './logo.svg';
@@ -11,6 +10,7 @@ import { Navbar, NavItem, Nav, NavLink, Collapse, Container, Row, Col } from "re
 import Image from "react-bootstrap/Image";
 import ButtonGroup from "react-bootstrap/ButtonGroup"; 
 import Button from "react-bootstrap/Button";
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -24,6 +24,7 @@ function App() {
   const [fromValue, setFromValue] = useState(5);
   const [toValue, setToValue] = useState(5);
   const [open, setOpen] = useState(false);
+  const [allowPrint, setAllowPrint] = useState(false);
 
  const onSubmit = useCallback(()=>{
     console.log(document.getElementById("from").value);
@@ -85,13 +86,22 @@ function App() {
       infoColumns.push(newInfos.slice());
     }
 
+    let index = 0;
     let resultColumns = new Array();
     for (let i = 0; i < infos.length; ++i)
     {
       resultColumns.push(new Array());
       for (let k = 0; k < infoColumns.length; ++k)
       {
-        resultColumns[resultColumns.length-1].push(infoColumns[k][i]);
+        let rec = infoColumns[k][i];
+        resultColumns[resultColumns.length-1].push(
+          {
+            id : index ++,
+            result : rec.result,
+            x : rec.x,
+            y : rec.y,
+            action : rec.action
+          });
       }
     }
 
@@ -102,50 +112,61 @@ function App() {
 
   return (
   <div className="App">
-  <Accordion defaultActiveKey="0">
-    <Accordion.Item eventKey="0">
-      <Accordion.Header>Генератор таблицы умножения</Accordion.Header>
-      <Accordion.Body>
-      <Form>
-        <Form.Group as={Row}  className="mb-3">
-          <Form.Label column sm={2}>Начало</Form.Label>
-          <Col sm={2}>
-          <Form.Control id="from"
-          required
-          type="number"
-          placeholder="Введите начальное число"
-          defaultValue={fromValue}
-          />
-          </Col>
-        </Form.Group> 
-        <Form.Group as={Row}  className="mb-3">
-          <Form.Label column sm={2} >Конец</Form.Label>
-          <Col sm={2}>
-          <Form.Control id="to"
-          required
-          type="number"
-          placeholder="Введите конечное число"
-          defaultValue={toValue}
-          />
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} className="mb-3">
-          <Col sm={{ span: 10, offset: 2 }}>
-          <Button type="button"
-          onClick={() =>  { onSubmit(); setShowTable(true); }} 
-          >Рассчитать</Button>
-          </Col>
-        </Form.Group>
-      </Form>
-      </Accordion.Body>
-    </Accordion.Item>
-  </Accordion>
+    <div className="d-print-none">
+    <Accordion defaultActiveKey="0">
+      <Accordion.Item eventKey="0">
+        <Accordion.Header>Генератор таблицы умножения</Accordion.Header>
+        <Accordion.Body>
+        <Form>
+          <Form.Group as={Row}  className="mb-3">
+            <Form.Label column sm={2}>Начало</Form.Label>
+            <Col sm={2}>
+            <Form.Control id="from"
+            required
+            type="number"
+            placeholder="Введите начальное число"
+            defaultValue={fromValue}
+            />
+            </Col>
+          </Form.Group> 
+          <Form.Group as={Row}  className="mb-3">
+            <Form.Label column sm={2} >Конец</Form.Label>
+            <Col sm={2}>
+            <Form.Control id="to"
+            required
+            type="number"
+            placeholder="Введите конечное число"
+            defaultValue={toValue}
+            />
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} className="mb-3">
+            <Col sm={{ span: 10, offset: 2 }}>
+              <ButtonToolbar aria-label="Toolbar with button groups">
+                <ButtonGroup className="me-2" aria-label="Third group">
+                  <Button onClick={() => { 
+                    onSubmit(); 
+                    setShowTable(true); 
+                    setAllowPrint(true);
+                    }} >Рассчитать</Button>
+                </ButtonGroup>
+                <ButtonGroup className="me-2" aria-label="Third group">
+                  <Button disabled={!allowPrint} onClick={() => window.print() } >Печать</Button>
+                </ButtonGroup>
+            </ButtonToolbar>
+            </Col>
+          </Form.Group>
+        </Form>
+        </Accordion.Body>
+      </Accordion.Item>
+    </Accordion>
+    </div>
 
-  <Collapse in={open} > 
-  <div >
-  <TableDisplay visible={showTable} tableData={tableData} tableColumns={tableColumns}/>
-  </div>
-  </Collapse>
+    <Collapse in={open} > 
+      <div >
+        <TableDisplay visible={showTable} tableData={tableData} tableColumns={tableColumns}/>
+      </div>
+    </Collapse>
   </div>
   );
 }
@@ -159,22 +180,22 @@ function TableDisplay(props) {
   }
   else 
   return (
-    <Table responsive cellSpacing="2" cellpading="2">
+    <Table className="TableResult" responsive>
     <thead>
       <tr>
-      {props.tableColumns.map((arrayData)=>{
+      {props.tableColumns.map((arrayData, index)=>{
         return (
-        <th></th>
+        <th key={index}></th>
         )})}
       </tr>
     </thead>
     <tbody>
-      {props.tableData.map(arrayData=>{
+      {props.tableData.map((arrayData, index)=>{
         return(
-        <tr>
+        <tr key= {index}>
           {arrayData.map(arrayCeil=>{
           return(  
-          <td>{arrayCeil.x.toString().padStart(2) + arrayCeil.action + arrayCeil.y + "="}</td>
+          <td key={arrayCeil.id}>{arrayCeil.x.toString().padStart(2) + " " + arrayCeil.action + " " + arrayCeil.y + " ="}</td>
           )
           })}
         </tr>
