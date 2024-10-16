@@ -180,15 +180,7 @@ function TableDisplay(props) {
   }
   else 
   return (
-    <Table className="TableResult" responsive>
-    <thead>
-      <tr>
-      {props.tableColumns.map((arrayData, index)=>{
-        return (
-        <th key={index}></th>
-        )})}
-      </tr>
-    </thead>
+    <Table className="TableResult table-bordered"  responsive>
     <tbody>
       {props.tableData.map((arrayData, index)=>{
         return(
