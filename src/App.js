@@ -16,7 +16,7 @@ import Form from 'react-bootstrap/Form';
 import Table from 'react-bootstrap/Table';
 import Accordion from 'react-bootstrap/Accordion';
 
-import  { shuffleArray } from "./tools.js";
+import  { shuffleArray, deepCopyArray } from "./tools.js";
 
 function App() {
   const [tableData, setTableData] = useState(null);
@@ -58,15 +58,29 @@ function App() {
     const columns = 6;
     const repeatAction = 3;
     const oneColumndData = new Array();
+    const arrayUnique = new Set();
     const dataByColumns = new Array();
+
     {
       for (let i = 0; i < repeatAction; ++i) {
-        let newData = multi.slice().concat(devide.slice());
+        var multiNew = deepCopyArray(multi);
+        for(var rec of multiNew) {
+          var key = rec.x.toString() + "x" + rec.y.toString();
+          if (arrayUnique.has(key)) {
+            arrayUnique.delete(key);
+            [ rec.x, rec.y ] = [rec.y, rec.x];
+            key = rec.x.toString() + "x" + rec.y.toString();
+            arrayUnique.add(key);
+          } else {
+            arrayUnique.add(key);
+          }
+        }
+        var newData = multiNew.concat(devide.slice());
         oneColumndData.push(...newData);
       }
 
       for (let i = 0; i < columns; ++i) {
-        dataByColumns.push(shuffleArray(oneColumndData.slice()));
+        dataByColumns.push(shuffleArray(deepCopyArray(oneColumndData)));
       }
     }
 

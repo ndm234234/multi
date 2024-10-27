@@ -8,3 +8,7 @@ for (var i = array.length - 1; i > 0; i--) {
 }
 return array;
 };
+
+export function deepCopyArray(array) {
+    return JSON.parse(JSON.stringify(array));
+}
