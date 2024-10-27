@@ -6,35 +6,28 @@ import './App.css';
 
 import "bootstrap/dist/css/bootstrap.css";
 
-import { Navbar, NavItem, Nav, NavLink, Collapse, Container, Row, Col } from "react-bootstrap";
-import Image from "react-bootstrap/Image";
-import ButtonGroup from "react-bootstrap/ButtonGroup"; 
-import Button from "react-bootstrap/Button";
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-
-import Form from 'react-bootstrap/Form';
+import { Collapse } from "react-bootstrap";
 import Table from 'react-bootstrap/Table';
 import Accordion from 'react-bootstrap/Accordion';
 
-import  { shuffleArray, deepCopyArray } from "./tools.js";
+import  { shuffleArray, shuffle, deepCopyArray } from "./tools.js";
+import InputPanel from "./InputPanel.js"
 
 function App() {
   const [tableData, setTableData] = useState(null);
   const [showTable, setShowTable] = useState(false);
-  const [fromValue, setFromValue] = useState(5);
-  const [toValue, setToValue] = useState(5);
+  const [fromValue, setFromValue] = useState(7);
+  const [toValue, setToValue] = useState(7);
   const [open, setOpen] = useState(false);
   const [allowPrint, setAllowPrint] = useState(false);
 
  const onSubmit = useCallback(()=>{
-    console.log(document.getElementById("from").value);
-
-    const from = parseInt(document.getElementById("from").value);
-    const to = parseInt(document.getElementById("to").value);
-
+    const from = Math.min(100, parseInt(document.getElementById("from").value));
+    const to = Math.min(100, parseInt(document.getElementById("to").value));
+   
     const multi = new Array();
 
-    for (let  k = 1; k < 10; k++) {
+    for (let k = 1; k < 10; k++) {
       for (let i = from; i <= to; ++i) {
         multi.push({
           result : i * k,
@@ -45,15 +38,13 @@ function App() {
       }
     }
 
-    const devide = new Array();
-    for(let rec of multi) {
-        devide.push({
-          result : rec.result / rec.y,
-          x : rec.result,
-          y : rec.y,
-          action : ":"
-        });
-    }
+    const devide = multi.map((rec) => {
+      return {
+        result : rec.result / rec.y,
+        x : rec.result,  y : rec.y,
+        action : ":"
+      }
+    });
 
     const columns = 6;
     const repeatAction = 3;
@@ -64,7 +55,7 @@ function App() {
     {
       for (let i = 0; i < repeatAction; ++i) {
         var multiNew = deepCopyArray(multi);
-        for(var rec of multiNew) {
+        for(let rec of multiNew) {
           var key = rec.x.toString() + "x" + rec.y.toString();
           if (arrayUnique.has(key)) {
             arrayUnique.delete(key);
@@ -88,64 +79,39 @@ function App() {
     const tableDataValue = new Array();
     for (let i = 0; i < oneColumndData.length; ++i)
     {
-      const newArray = new Array();
-      for (let data of dataByColumns) {
-        const rec = data[i];
-        newArray.push({
+      const newArray = dataByColumns.map((item) => {
+        const rec = item[i];
+        return {
           id : index ++,
           result : rec.result,
           x : rec.x,
           y : rec.y,
           action : rec.action
-        });
-      }
+        }});
       tableDataValue.push(newArray);
     }
 
     setTableData(tableDataValue);
     setOpen(true)
+    setShowTable(true); 
+    setAllowPrint(true);
  },[])
 
   return (
   <div className="App">
-    <div className="d-print-none fixed-top">
+    <div className="d-print-none sticky-top">
     <Accordion defaultActiveKey="0">
       <Accordion.Item eventKey="0">
         <Accordion.Header>Генератор таблицы умножения</Accordion.Header>
         <Accordion.Body>
-          <Form.Group as={Row}  className="mb-3">
-            <Form.Label column sm="1" >Начало</Form.Label>
-            <Col sm="1">
-              <Form.Control column sm="1" id="from" required type="number" placeholder="Введите начальное число" defaultValue={fromValue}/>
-            </Col>
-          </Form.Group> 
-          <Form.Group as={Row}  className="mb-3">
-            <Form.Label column sm="1" >Конец</Form.Label>
-            <Col sm="1">
-            <Form.Control id="to" required type="number" placeholder="Введите конечное число" defaultValue={toValue} />
-            </Col>
-          </Form.Group> 
-          <Form.Group as={Row} className="mb-3">
-              <ButtonToolbar aria-label="Toolbar with button groups">
-                <ButtonGroup className="me-2" aria-label="Third group">
-                  <Button onClick={() => { 
-                    onSubmit(); 
-                    setShowTable(true); 
-                    setAllowPrint(true);
-                    }} >Рассчитать</Button>
-                </ButtonGroup>
-                <ButtonGroup className="me-2" aria-label="Third group">
-                  <Button disabled={!allowPrint} onClick={() => window.print()} >Печать</Button>
-                </ButtonGroup>
-            </ButtonToolbar>
-          </Form.Group>
+          <InputPanel allowPrint={allowPrint} fromValue={fromValue} setFromValue={setFromValue} toValue={toValue} onSubmit={onSubmit} />
         </Accordion.Body>
       </Accordion.Item>
     </Accordion>
     </div>
 
     <Collapse in={open} > 
-      <div >
+      <div className="position-static">
         <TableDisplay visible={showTable} tableData={tableData}/>
       </div>
     </Collapse>
