@@ -71,7 +71,22 @@ function App() {
       }
 
       for (let i = 0; i < columns; ++i) {
-        dataByColumns.push(shuffleArray(deepCopyArray(oneColumndData)));
+        const shffuledArray = shuffleArray(deepCopyArray(oneColumndData));
+        const nearDuplicates = new Array(); 
+        const oneColumndDataFixed = new Array();
+        for (let rec of shffuledArray) {
+          if (oneColumndDataFixed.length > 0) {
+            const existRec = oneColumndDataFixed[oneColumndDataFixed.length-1];
+            if (existRec.x == rec.x && existRec.y == rec.y && existRec.action == rec.action) {
+              nearDuplicates.push(rec);
+            } else {
+              oneColumndDataFixed.push(rec);
+            }
+          } else {
+              oneColumndDataFixed.push(rec);
+          }
+        }
+        dataByColumns.push(oneColumndDataFixed.concat(shuffleArray(nearDuplicates)));
       }
     }
 
