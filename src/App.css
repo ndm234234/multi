@@ -11,8 +11,12 @@
 .TableResult {
   font-family: monospace;
   font-size: 14px;
-  line-height: 2px;
+  line-height: 0;
   white-space: pre-wrap;
+}
+
+.TableResult td, th, tr {
+  height: 19px; /* Примерно 5 мм */
 }
 
 @media (prefers-reduced-motion: no-preference) {

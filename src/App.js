@@ -108,26 +108,24 @@ function App() {
 
   return (
   <div className="App">
-    <div className="d-print-none">
+    <div className="d-print-none fixed-top">
     <Accordion defaultActiveKey="0">
       <Accordion.Item eventKey="0">
         <Accordion.Header>Генератор таблицы умножения</Accordion.Header>
         <Accordion.Body>
-        <Form>
           <Form.Group as={Row}  className="mb-3">
-            <Form.Label column sm={2}>Начало</Form.Label>
-            <Col sm={2}>
-            <Form.Control id="from" required type="number" placeholder="Введите начальное число" defaultValue={fromValue}/>
+            <Form.Label column sm="1" >Начало</Form.Label>
+            <Col sm="1">
+              <Form.Control column sm="1" id="from" required type="number" placeholder="Введите начальное число" defaultValue={fromValue}/>
             </Col>
           </Form.Group> 
           <Form.Group as={Row}  className="mb-3">
-            <Form.Label column sm={2} >Конец</Form.Label>
-            <Col sm={2}>
+            <Form.Label column sm="1" >Конец</Form.Label>
+            <Col sm="1">
             <Form.Control id="to" required type="number" placeholder="Введите конечное число" defaultValue={toValue} />
             </Col>
-          </Form.Group>
+          </Form.Group> 
           <Form.Group as={Row} className="mb-3">
-            <Col sm={{ span: 10, offset: 2 }}>
               <ButtonToolbar aria-label="Toolbar with button groups">
                 <ButtonGroup className="me-2" aria-label="Third group">
                   <Button onClick={() => { 
@@ -140,9 +138,7 @@ function App() {
                   <Button disabled={!allowPrint} onClick={() => window.print()} >Печать</Button>
                 </ButtonGroup>
             </ButtonToolbar>
-            </Col>
           </Form.Group>
-        </Form>
         </Accordion.Body>
       </Accordion.Item>
     </Accordion>
@@ -166,7 +162,7 @@ function TableDisplay(props) {
   }
   else 
   return (
-    <Table className="TableResult table-bordered"  responsive>
+   <Table className="TableResult table-bordered" responsive>
     <tbody>
       {props.tableData.map((arrayData, index)=>{
         return(
