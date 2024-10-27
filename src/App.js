@@ -13,12 +13,12 @@ import Button from "react-bootstrap/Button";
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 
 import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
 import Table from 'react-bootstrap/Table';
 import Accordion from 'react-bootstrap/Accordion';
 
+import  { shuffleArray } from "./tools.js";
+
 function App() {
-  const [tableColumns, setTableColumns] = useState(0);
   const [tableData, setTableData] = useState(null);
   const [showTable, setShowTable] = useState(false);
   const [fromValue, setFromValue] = useState(5);
@@ -34,12 +34,9 @@ function App() {
 
     const multi = new Array();
 
-    for (let  k = 1; k < 10; k++)
-    {
-      for (let i = from; i <= to; ++i)
-      {
-        multi.push(
-        {
+    for (let  k = 1; k < 10; k++) {
+      for (let i = from; i <= to; ++i) {
+        multi.push({
           result : i * k,
           x : k,
           y : i,
@@ -49,10 +46,8 @@ function App() {
     }
 
     const devide = new Array();
-    for(let rec of multi)
-    {
-        devide.push(
-        {
+    for(let rec of multi) {
+        devide.push({
           result : rec.result / rec.y,
           x : rec.result,
           y : rec.y,
@@ -60,53 +55,40 @@ function App() {
         });
     }
 
-    let infos = new Array();
-    for (let i = 0; i < 3; ++i)
-    {
-      infos = infos.concat(multi).concat(devide);
-    }
-
-    function shuffleArray(array) {
-      for (var i = array.length - 1; i > 0; i--) { 
-          // Generate random number 
-          var j = Math.floor(Math.random() * (i + 1));
-          var temp = array[i];
-          array[i] = array[j];
-          array[j] = temp;
-      }
-      return array;
-    };
-
     const columns = 6;
-
-    let infoColumns = new Array();
-    for (let i = 0; i < columns; ++i)
+    const repeatAction = 3;
+    const oneColumndData = new Array();
+    const dataByColumns = new Array();
     {
-      let newInfos = shuffleArray(infos);
-      infoColumns.push(newInfos.slice());
+      for (let i = 0; i < repeatAction; ++i) {
+        let newData = multi.slice().concat(devide.slice());
+        oneColumndData.push(...newData);
+      }
+
+      for (let i = 0; i < columns; ++i) {
+        dataByColumns.push(shuffleArray(oneColumndData.slice()));
+      }
     }
 
     let index = 0;
-    let resultColumns = new Array();
-    for (let i = 0; i < infos.length; ++i)
+    const tableDataValue = new Array();
+    for (let i = 0; i < oneColumndData.length; ++i)
     {
-      resultColumns.push(new Array());
-      for (let k = 0; k < infoColumns.length; ++k)
-      {
-        let rec = infoColumns[k][i];
-        resultColumns[resultColumns.length-1].push(
-          {
-            id : index ++,
-            result : rec.result,
-            x : rec.x,
-            y : rec.y,
-            action : rec.action
-          });
+      const newArray = new Array();
+      for (let data of dataByColumns) {
+        const rec = data[i];
+        newArray.push({
+          id : index ++,
+          result : rec.result,
+          x : rec.x,
+          y : rec.y,
+          action : rec.action
+        });
       }
+      tableDataValue.push(newArray);
     }
 
-    setTableColumns(infoColumns);
-    setTableData(resultColumns);
+    setTableData(tableDataValue);
     setOpen(true)
  },[])
 
@@ -121,23 +103,13 @@ function App() {
           <Form.Group as={Row}  className="mb-3">
             <Form.Label column sm={2}>Начало</Form.Label>
             <Col sm={2}>
-            <Form.Control id="from"
-            required
-            type="number"
-            placeholder="Введите начальное число"
-            defaultValue={fromValue}
-            />
+            <Form.Control id="from" required type="number" placeholder="Введите начальное число" defaultValue={fromValue}/>
             </Col>
           </Form.Group> 
           <Form.Group as={Row}  className="mb-3">
             <Form.Label column sm={2} >Конец</Form.Label>
             <Col sm={2}>
-            <Form.Control id="to"
-            required
-            type="number"
-            placeholder="Введите конечное число"
-            defaultValue={toValue}
-            />
+            <Form.Control id="to" required type="number" placeholder="Введите конечное число" defaultValue={toValue} />
             </Col>
           </Form.Group>
           <Form.Group as={Row} className="mb-3">
@@ -151,7 +123,7 @@ function App() {
                     }} >Рассчитать</Button>
                 </ButtonGroup>
                 <ButtonGroup className="me-2" aria-label="Third group">
-                  <Button disabled={!allowPrint} onClick={() => window.print() } >Печать</Button>
+                  <Button disabled={!allowPrint} onClick={() => window.print()} >Печать</Button>
                 </ButtonGroup>
             </ButtonToolbar>
             </Col>
@@ -164,7 +136,7 @@ function App() {
 
     <Collapse in={open} > 
       <div >
-        <TableDisplay visible={showTable} tableData={tableData} tableColumns={tableColumns}/>
+        <TableDisplay visible={showTable} tableData={tableData}/>
       </div>
     </Collapse>
   </div>
@@ -176,7 +148,7 @@ export default App;
 function TableDisplay(props) {
   if (!props.visible) 
   {
-    return <div></div>
+    return null;
   }
   else 
   return (

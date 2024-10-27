@@ -9,7 +9,10 @@
 }
 
 .TableResult {
+  font-family: monospace;
   font-size: 14px;
+  line-height: 2px;
+  white-space: pre-wrap;
 }
 
 @media (prefers-reduced-motion: no-preference) {
